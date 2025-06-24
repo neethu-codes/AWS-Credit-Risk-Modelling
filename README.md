@@ -2,17 +2,25 @@
 
 A machine learning-powered **credit risk modeling application** that predicts an individual's **default probability**, computes a standardized **credit score (300–900)**, and assigns a **credit rating** based on financial and demographic data.
 
-Built using `scikit-learn` for modeling and `Streamlit` for the interactive frontend, this app helps financial institutions assess creditworthiness with speed and transparency.
+Built using **scikit-learn** for modeling, **Streamlit** for the interactive frontend,and **FastAPI** for backend API. The application supports real-time risk assessment that financial institutions can integrate into their decision systems.
+
 
 
 ##  Project Overview
 
-The application uses a trained **logistic regression model** to predict the likelihood of credit default. Based on this probability, a credit score is calculated and categorized into qualitative ratings such as *Poor*, *Average*, *Good*, and *Excellent*. The UI allows users to enter data like age, income, loan amount, credit utilization, and more to receive real-time scoring.
 
+The application uses a trained **logistic regression model** to:
+- Predict the likelihood of credit default
+- Compute a credit score scaled from **300 to 900**
+- Categorize the applicant into **Poor / Average / Good / Excellent**
+
+Inputs such as age, income, loan amount, credit utilization, etc., are passed through an API built with FastAPI to receive real-time scoring..
 
 ##  Features
 
 -  Real-time prediction of **default probability**
+-  Modular FastAPI backend for easy deployment
+-  Dockerized backend for cloud deployment (AWS EC2)
 -  Calculation of standardized **credit score (300–900 scale)**
 -  Assignment of **credit rating** (Poor/Average/Good/Excellent)
 -  Clean, intuitive **Streamlit UI**
@@ -63,7 +71,42 @@ credit-risk-modelling/
 │ ├── model.joblib # Pre-trained model 
 │── requirements.txt # Dependencies
 │── README.md # Project documentation
+│── Dockerfile # Container setup for FastAPI app
 ```
+
+## Run With Docker
+
+```bash
+docker pull msneethu/credit-risk-api
+docker run -d -p 8000:8000 msneethu/credit-risk-api
+```
+Open API docs at: http://localhost:8000/docs
+
+## Deploy to AWS EC2 (Steps)
+### 1. Launch EC2 (Ubuntu) instance
+
+### 2. Install Docker:
+
+
+```
+sudo apt update && sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+```
+
+### 3. Pull and run your container:
+
+
+```
+docker pull msneethu/credit-risk-api
+docker run -d -p 8000:8000 msneethu/credit-risk-api
+```
+
+### 4. Open port 8000 in your EC2 security group
+
+### 5. Access at http://EC2-Public-IP:8000/docs
+
 ## App Preview
 Here’s a preview of the application:
 

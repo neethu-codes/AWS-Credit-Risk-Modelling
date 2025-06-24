@@ -1,30 +1,29 @@
-# Credit-Risk-Modelling
+# 📊 Credit Risk Modelling
 
-A machine learning-powered **credit risk modeling application** that predicts an individual's **default probability**, computes a standardized **credit score (300–900)**, and assigns a **credit rating** based on financial and demographic data.
+A machine learning-powered credit risk modeling application that predicts an individual's **default probability**, computes a standardized **credit score (300–900)**, and assigns a **credit rating** (Poor / Average / Good / Excellent).
 
-Built using **scikit-learn** for modeling, **Streamlit** for the interactive frontend,and **FastAPI** for backend API. The application supports real-time risk assessment that financial institutions can integrate into their decision systems.
-
+Built using **FastAPI** for the backend API, **Streamlit** for the interactive frontend and **scikit-learn** for modeling. The backend is containerized with **Docker** and deployed on **AWS EC2**.
 
 
 ##  Project Overview
 
+This application uses a trained **logistic regression model** to:
 
-The application uses a trained **logistic regression model** to:
-- Predict the likelihood of credit default
-- Compute a credit score scaled from **300 to 900**
-- Categorize the applicant into **Poor / Average / Good / Excellent**
+- Predict the probability that an applicant will **default** on a loan
+- Convert that probability into a **credit score** (scaled between 300–900)
+- Assign a **credit rating** based on the score
 
-Inputs such as age, income, loan amount, credit utilization, etc., are passed through an API built with FastAPI to receive real-time scoring..
 
 ##  Features
 
--  Real-time prediction of **default probability**
--  Modular FastAPI backend for easy deployment
--  Dockerized backend for cloud deployment (AWS EC2)
--  Calculation of standardized **credit score (300–900 scale)**
--  Assignment of **credit rating** (Poor/Average/Good/Excellent)
--  Clean, intuitive **Streamlit UI**
--  Dynamic computation of derived metrics like **Loan-to-Income Ratio**
+-  Predicts **default probability**
+-  Computes **credit score**
+-  Assigns **credit rating** (Poor / Average / Good / Excellent)
+-  Modular prediction logic with preprocessing
+-  **Dockerized FastAPI** backend for easy deployment
+-  Deployed and tested on **AWS EC2**
+-  Interactive Streamlit UI 
+
 
 ##  Dataset Information  
 
@@ -39,73 +38,157 @@ This dataset contains **50,000 loan applicants' records**, including demographic
 
 🔹 **Target Variable:** `default` (boolean) indicates whether a customer defaulted on the loan.  
 
-This dataset is useful for building **credit risk models**, loan approval systems, and financial analytics applications. 
 
-##  Project Setup  
-### 1. Clone the Repository  
+
+##  Project Structure
+
+```
+credit-risk-modelling/
+├── prediction_helper.py        # ML preprocessing and scoring logic
+├── main.py                     # (Optional) Streamlit frontend
+├── artifacts/
+│   └── model_data.joblib       # Trained model, scaler, and feature info
+├── Dockerfile                  # Docker build instructions
+├── requirements.txt            # Python dependencies
+└── README.md                   # Project documentation
+```
+
+
+
+##  Project Setup
+
+Choose one of the two options below to get started:
+
+
+
+###  Option 1: Run with Docker (Recommended)
+
+1. **Build the Docker image**
+
+```bash
+docker build -t msneethu/credit-risk-api .
+```
+
+2. **Run the container**
+
+```bash
+docker run -p 8000:8000 msneethu/credit-risk-api
+```
+
+3. **Access the API**
+
+Open: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+
+
+
+###  Option 2: Run Locally (Without Docker)
+
+1. **Clone the repository**
+
 ```bash
 git clone https://github.com/neethu-codes/Credit-Risk-Modelling.git
 cd Credit-Risk-Modelling
 ```
-### 2. Create and Activate Virtual Environment
+
+2. **Create and activate virtual environment**
+
 ```bash
-python -m venv venv  
-source venv/bin/activate  # On Mac/Linux  
-venv\Scripts\activate  # On Windows  
+python -m venv venv
+
+# On Mac/Linux
+source venv/bin/activate
+
+# On Windows
+venv\scripts\Activate
 ```
-### 3. Install Dependencies
+
+3. **Install dependencies**
+
 ```bash
-pip install -r requirements.txt 
+pip install -r requirements.txt
 ```
-### 4. Run the Streamlit App
+
+4. **Run the FastAPI app**
+
+```bash
+uvicorn prediction_helper:app --reload
+```
+
+5. **Open API docs**
+
+Visit: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+
+
+###  Run Streamlit Frontend
+
 ```bash
 streamlit run main.py
 ```
-## Project Structure
-```
-credit-risk-modelling/
- 
-├── main.py # Streamlit application
-├── prediction_helper.py # Function to load and run the model
-│── artifacts/
-│ ├── model.joblib # Pre-trained model 
-│── requirements.txt # Dependencies
-│── README.md # Project documentation
-│── Dockerfile # Container setup for FastAPI app
+
+
+
+##  AWS EC2 Deployment
+
+Already deployed successfully using Docker on AWS EC2
+
+### Steps:
+
+1. **Launch EC2 instance**
+   - Use Ubuntu 20.04 or Amazon Linux 2
+   - Open port **8000** in security group
+
+2. **Install Docker**
+
+```bash
+sudo apt update
+sudo apt install docker.io -y
 ```
 
-## Run With Docker
+3. **Pull and run the image**
 
 ```bash
 docker pull msneethu/credit-risk-api
 docker run -d -p 8000:8000 msneethu/credit-risk-api
 ```
-Open API docs at: http://localhost:8000/docs
 
-## Deploy to AWS EC2 (Steps)
-### 1. Launch EC2 (Ubuntu) instance
+4. **Test the API**
 
-### 2. Install Docker:
+Visit: `http://<EC2-Public-IP>:8000/docs`
 
 
+
+
+##  API Request Example
+
+**POST** `/predict`
+
+```json
+{
+  "age": 28,
+  "income": 1200000,
+  "loan_amount": 2560000,
+  "loan_tenure_months": 36,
+  "avg_dpd_per_delinquency": 20,
+  "delinquency_ratio": 30,
+  "credit_utilization_ratio": 30,
+  "num_open_accounts": 2,
+  "residence_type": "Owned",
+  "loan_purpose": "Home",
+  "loan_type": "Unsecured"
+}
 ```
-sudo apt update && sudo apt install docker.io -y
-sudo systemctl start docker
-sudo systemctl enable docker
-sudo usermod -aG docker $USER
+
+**Response:**
+
+```json
+{
+  "default_probability": 0.13,
+  "credit_score": 765,
+  "rating": "Excellent"
+}
 ```
-
-### 3. Pull and run your container:
-
-
-```
-docker pull msneethu/credit-risk-api
-docker run -d -p 8000:8000 msneethu/credit-risk-api
-```
-
-### 4. Open port 8000 in your EC2 security group
-
-### 5. Access at http://EC2-Public-IP:8000/docs
 
 ## App Preview
 Here’s a preview of the application:
